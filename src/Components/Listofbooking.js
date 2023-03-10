@@ -1,89 +1,61 @@
-import { useEffect, useState } from "react";
+import React, { useState } from "react";
 
- 
 function App() {
-  const [data, getData] = useState([]);
-  const URL = "http://navatarbe-env.eba-drviydr6.us-east-2.elasticbeanstalk.com/getListOfBookingByIdandDate?booked_date=27-02-2023&navatar_id=1";
-  let  NavatarId;
-  let  BookingDate;
-  useEffect(() => {
-    fetchData();
-  } );
-  
-  const fetchData = () => {
-   
-    fetch(URL)
-      .then((res) => res.json())
- 
-      .then((response) => {
-        console.log(response);
-        getData(response);
-      });
-  };
+  const [booked_date, setInput1] = useState("27-02-2023");
+  const [navatar_id, setInput2] = useState("1");
+  const [bookings, setBookings] = useState([]);
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    debugger
-      NavatarId = event.target.NavatarId.value;
-      BookingDate = event.target.BookingDate.value;
-
-      this.setState({ NavatarId: NavatarId})
-      this.setState({ BookingDate: BookingDate})
-      
-     alert(this.state.NavatarId)
-     alert(this.state.BookingDate)
-  } 
+    fetch(`http://navatarbe-env.eba-drviydr6.us-east-2.elasticbeanstalk.com/getListOfBookingByIdandDate?booked_date=${booked_date}&navatar_id=${navatar_id}`)
+      .then((response) => response.json())
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setBookings(data);
+        } else {
+          setBookings([]);
+        }
+      })
+      .catch((error) => console.log(error));
+  };
 
   return (
-    <form onSubmit={handleSubmit}>
-      
-
- 
-        {/* <input type="text" />
+    <div style={{textAlign:"center"}}>
+    <h1>Enter date and Navatar ID</h1>
+      <form onSubmit={handleSubmit}>
+      <br/>
+          
+          <input type="text" value={booked_date} onChange={(event) => setInput1(event.target.value)} /><br/><br/>     
+         
+          <input type="text" value={navatar_id} onChange={(event) => setInput2(event.target.value)} /><br/><br/>
      
-     
-       <input type="text" /> */}
-
-  <input type="text" id="NavatarId" name="NavatarId" />
-
-  <input type="text" id="BookingDate" name="BookingDate" />
-       <input type="submit" value="Submit" />
-  
-
- - 
-    <div className="container">
-     <table className="table table-striped">
-    
-      <tbody>
+        <button type="submit">Fetch bookings</button>
+      </form><br/><br/>
+      <div> <h1 style={{textAlign: "center"}}>List of Bookings for the Day</h1> <br/><br/>
+      <table className="table">
+       
         <tr>
-          <th>Booked  ID</th>
+          <th>Booked Id</th>
           <th>Booked Date</th>
           <th>Booked Timeslot</th>
-          <th>User id</th>
-          <th>Booked Status</th> <th>Navatar Id</th>
+          <th>User Id</th>
+          <th>Booked Status</th>
+          <th>Navatar ID</th>
         </tr>
-        {data.map((item, i) => (
-          <tr key={i}>
-            {/* <td>{item.booked_id}</td> */}
-            <td></td>
-            <td>{item.booked_date}</td>
-            <td>{item.booked_timeslot}</td>
-            <td>{item.user_id}</td>
-            <td>{item.booked_status}</td>
-            {/* <td>{item.navatar_id}</td> */}
-            <td></td>
-
+        {bookings.map((post, i) => 
+          <tr key= "i">
+            <td> {post.booked_id} </td>
+            <td> {post.booked_date} </td>
+            <td>{post.booked_timeSlot}</td>
+            <td> {post.user_id} </td>
+            <td> {post.booked_status} </td>
+            <td>{post.navatar_id}</td>
           </tr>
-        ))}
-      </tbody>
+        )}
       </table>
-    
+      </div>
     </div>
-    <label>
-
-    </label>
-    </form>
   );
 }
- 
+
 export default App;
